@@ -1,0 +1,11 @@
+[project]
+name = "wookielm"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "google-genai>=2.4.0",
+    "mwparserfromhell>=0.7.2",
+    "mwxml>=0.3.8",
+    "pydantic>=2.13.4",
+    "tqdm>=4.67.3",
+]
