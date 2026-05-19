@@ -6,7 +6,7 @@ turning it into training data for LLMs. The end goal is two artifacts:
 1. A clean Markdown corpus of every Wookieepedia article (for pretraining).
 2. A large synthetic Q&A dataset generated from those articles (for SFT).
 
-The Markdown corpus is organized by article title (one file per page). There are currently 171,440 markdown files.
+The Markdown corpus is organized by article title (one file per page). My extraction yielded 171,440 markdown files.
 
 ## Pipeline
 
