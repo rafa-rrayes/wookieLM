@@ -1,5 +1,7 @@
 # wookieLM
 
+***Outdated readme.***
+
 A small pipeline for building a Star Wars text corpus from Wookieepedia and
 turning it into training data for LLMs. The end goal is two artifacts:
 

@@ -1,3 +1,7 @@
 wookieepedia
 qa_dataset
 .venv
+facts_dataset
+subtitles
+__pycache__
+wookiepedia.zip
