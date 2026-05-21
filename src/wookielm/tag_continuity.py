@@ -1,6 +1,6 @@
 """Stamp a `continuity:` field into every Wookieepedia .md file's frontmatter.
 
-Reads the canon/Legends title lists produced by fetch_continuity.py and matches
+Reads the canon/Legends title lists produced by wookiee-fetch-continuity and matches
 each local article by its `title:` frontmatter field (exact match, including any
 "/Legends" subpage suffix). Each file is tagged:
 
@@ -16,9 +16,9 @@ The edit is strictly additive and idempotent: it inserts one line after the
 never touched (matched and rewritten byte-for-byte around the frontmatter).
 
 Usage:
-    uv run tag_continuity.py --dry-run            # report distribution, write nothing
-    uv run tag_continuity.py --dry-run --limit 50 # sample a few
-    uv run tag_continuity.py                       # apply to all files
+    uv run wookiee-tag-continuity --dry-run            # report distribution, write nothing
+    uv run wookiee-tag-continuity --dry-run --limit 50 # sample a few
+    uv run wookiee-tag-continuity                       # apply to all files
 """
 
 from __future__ import annotations
@@ -26,11 +26,11 @@ from __future__ import annotations
 import argparse
 import re
 from collections import Counter
-from pathlib import Path
 
-ROOT = Path(__file__).parent
-WOOK_DIR = ROOT / "wookieepedia"
-CONT_DIR = ROOT / "continuity"
+from wookielm import paths
+
+WOOK_DIR = paths.WOOKIEEPEDIA_DIR
+CONT_DIR = paths.CONTINUITY_DIR
 
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 TITLE_RE = re.compile(r'^title:\s*"?(.*?)"?\s*$', re.MULTILINE)
@@ -39,7 +39,7 @@ TITLE_RE = re.compile(r'^title:\s*"?(.*?)"?\s*$', re.MULTILINE)
 def load_titles(name: str) -> set[str]:
     path = CONT_DIR / name
     if not path.exists():
-        raise SystemExit(f"missing {path} — run `uv run fetch_continuity.py` first")
+        raise SystemExit(f"missing {path} — run `uv run wookiee-fetch-continuity` first")
     return {ln.rstrip("\n") for ln in path.open(encoding="utf-8") if ln.strip()}
 
 

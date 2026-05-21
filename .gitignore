@@ -1,10 +1,18 @@
-wookieepedia
-qa_dataset
-.venv
-facts_dataset
-subtitles
-__pycache__
-wookiepedia.zip
-wikipedia
-scripts
-books
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+
+# OS
+.DS_Store
+
+# Corpus data — large, scraped/generated; rebuilt by the pipeline, not versioned.
+# The tracked continuity/ title lists live outside this dir.
+/corpus/
+
+# Source dumps
+*.7z
+*.zip

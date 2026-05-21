@@ -11,14 +11,14 @@ A two-stage pipeline behind a single CLI:
            chrome, convert to clean GitHub-flavoured Markdown (pandoc + an
            in-process table/HTML cleaner), and write one .md per article under
            wikipedia/<Shard>/, mirroring the Wookieepedia corpus format so both
-           feed the same downstream generate_fact.py pipeline.
+           feed the same downstream wookiee-generate-fact pipeline.
 
 Usage:
-  uv run wikipedia.py crawl                  # compile the article list (~850)
-  uv run wikipedia.py crawl --both           # category tree ∪ WikiProject (~1000)
-  uv run wikipedia.py scrape                  # download every listed article
-  uv run wikipedia.py scrape --limit 5        # smoke-test on 5
-  uv run wikipedia.py <command> -h            # full options + strategy notes
+  uv run wookiee-wikipedia crawl                  # compile the article list (~850)
+  uv run wookiee-wikipedia crawl --both           # category tree ∪ WikiProject (~1000)
+  uv run wookiee-wikipedia scrape                  # download every listed article
+  uv run wookiee-wikipedia scrape --limit 5        # smoke-test on 5
+  uv run wookiee-wikipedia <command> -h            # full options + strategy notes
 
 Requires: pandoc on PATH (scrape); beautifulsoup4 + lxml + tqdm (declared in
 pyproject). Politeness: descriptive User-Agent, maxlag=5, --sleep between
@@ -44,6 +44,8 @@ from urllib.request import Request, urlopen
 
 from bs4 import BeautifulSoup, Tag
 from tqdm import tqdm
+
+from wookielm import paths
 
 USER_AGENT = (
     "wookieLM/1.0 "
@@ -149,16 +151,16 @@ pass); pass --keep-redirects to retain them. Disambiguation pages (ns-0
 navigation stubs) are likewise dropped by default; pass --keep-disambiguation
 to retain them.
 
-Outputs (into --out, default ./wikipedia):
+Outputs (into --out, default corpus/wikipedia):
   articles.jsonl   one record per article: title, pageid, ns, depth, via_category
   articles.txt     plain newline-separated list of article titles (sorted)
   categories.txt   every category visited during the crawl (sorted)
 
 Examples:
-  uv run wikipedia.py crawl                              # category tree (~850)
-  uv run wikipedia.py crawl --wikiproject                # full curated set
-  uv run wikipedia.py crawl --category "Star Wars" --max-depth 6
-  uv run wikipedia.py crawl --category "Jedi" --lang en --out ./wiki_jedi
+  uv run wookiee-wikipedia crawl                              # category tree (~850)
+  uv run wookiee-wikipedia crawl --wikiproject                # full curated set
+  uv run wookiee-wikipedia crawl --category "Star Wars" --max-depth 6
+  uv run wookiee-wikipedia crawl --category "Jedi" --lang en --out ./wiki_jedi
 """
 
 
@@ -796,7 +798,7 @@ Scrape the compiled Wikipedia article list into clean Markdown (data_sources.md 
 Reads the article list produced by `crawl` (wikipedia/articles.jsonl) and
 downloads each article's rendered content via the MediaWiki API, writing one
 Markdown file per article that mirrors the Wookieepedia corpus format (YAML
-frontmatter + prose), so both feed the same downstream generate_fact.py pipeline.
+frontmatter + prose), so both feed the same downstream wookiee-generate-fact pipeline.
 
 Why rendered HTML, not wikitext: the content worth keeping (infoboxes, episode
 tables) lives in templates that only exist once expanded. So this fetches the
@@ -807,7 +809,7 @@ flavoured Markdown with pandoc. Complex multi-row tables that GFM can't express
 are left as compact inline HTML and then re-rendered cleanly by the in-process
 table cleaner, so episode/infobox data survives.
 
-Output layout (under --out, default ./wikipedia, alongside the list files):
+Output layout (under --out, default corpus/wikipedia, alongside the list files):
   <out>/<Shard>/<Sanitized_Title>.md   one cleaned article, sharded by first char
 
 Each file:
@@ -825,10 +827,10 @@ Resumable: articles whose output file already exists are skipped unless
 end rather than aborting the run.
 
 Examples:
-  uv run wikipedia.py scrape                       # scrape all listed articles
-  uv run wikipedia.py scrape --limit 5             # smoke-test on 5
-  uv run wikipedia.py scrape --letters A,B --workers 8
-  uv run wikipedia.py scrape --overwrite
+  uv run wookiee-wikipedia scrape                       # scrape all listed articles
+  uv run wookiee-wikipedia scrape --limit 5             # smoke-test on 5
+  uv run wookiee-wikipedia scrape --letters A,B --workers 8
+  uv run wookiee-wikipedia scrape --overwrite
 
 Requires: pandoc on PATH; beautifulsoup4 + lxml (declared in pyproject).
 """
@@ -1049,7 +1051,7 @@ def cmd_scrape(args) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
-        prog="wikipedia.py", description=__doc__,
+        prog="wookiee-wikipedia", description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="command", required=True, metavar="{crawl,scrape}")
 
@@ -1061,7 +1063,7 @@ def main(argv: list[str] | None = None) -> int:
     pc.add_argument("--lang", default="en", help="Wikipedia language subdomain (default: en).")
     pc.add_argument("--max-depth", type=int, default=None,
                     help="Max subcategory levels to descend (default: unlimited, cycle-guarded).")
-    pc.add_argument("--out", type=Path, default=Path("wikipedia"), help="Output directory (default: ./wikipedia).")
+    pc.add_argument("--out", type=Path, default=paths.WIKIPEDIA_DIR, help="Output directory (default: corpus/wikipedia).")
     pc.add_argument("--sleep", type=float, default=0.1, help="Seconds between API requests (default: 0.1).")
     pc.add_argument("--exclude", default=",".join(EXCLUDE_DEFAULT),
                     help="Comma-separated subcategory names to skip (default: maintenance cats; "
@@ -1084,9 +1086,9 @@ def main(argv: list[str] | None = None) -> int:
     ps = sub.add_parser("scrape", help="download listed articles into clean Markdown",
                         description=SCRAPE_DESC,
                         formatter_class=argparse.RawDescriptionHelpFormatter)
-    ps.add_argument("--in", dest="in_path", type=Path, default=Path("wikipedia/articles.jsonl"),
-                    help="Article list to scrape (default: wikipedia/articles.jsonl).")
-    ps.add_argument("--out", type=Path, default=Path("wikipedia"), help="Output root (default: ./wikipedia).")
+    ps.add_argument("--in", dest="in_path", type=Path, default=paths.WIKIPEDIA_DIR / "articles.jsonl",
+                    help="Article list to scrape (default: corpus/wikipedia/articles.jsonl).")
+    ps.add_argument("--out", type=Path, default=paths.WIKIPEDIA_DIR, help="Output root (default: corpus/wikipedia).")
     ps.add_argument("--lang", default="en", help="Wikipedia language subdomain (default: en).")
     ps.add_argument("--letters", help="Comma-separated shard letters to limit to (e.g. A,B,C).")
     ps.add_argument("--limit", type=int, help="Only process the first N articles (after --letters).")

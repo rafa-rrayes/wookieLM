@@ -1,15 +1,15 @@
-"""Extract the text layer from the Star Wars novel PDFs in books/ into .txt files.
+"""Extract the text layer from the Star Wars novel PDFs in corpus/books/ into .txt files.
 
 Raw extraction: keeps front/back matter (copyright, TOC, "About the Author"),
-matching the two hand-made .txt files already in books/. Pages are joined with a
+matching the two hand-made .txt files already in corpus/books/. Pages are joined with a
 single newline (no form-feed page markers). Files that already have a .txt are
 skipped so existing extractions are never clobbered.
 
 Output name = PDF name with the "_OceanofPDF.com_" prefix and ".pdf" stripped.
 
 Usage:
-    uv run extract_books.py            # extract all PDFs lacking a .txt
-    uv run extract_books.py --force    # re-extract even if .txt exists
+    uv run wookiee-extract-books            # extract all PDFs lacking a .txt
+    uv run wookiee-extract-books --force    # re-extract even if .txt exists
 """
 
 from __future__ import annotations
@@ -19,7 +19,9 @@ from pathlib import Path
 
 import fitz  # PyMuPDF
 
-BOOKS_DIR = Path(__file__).parent / "books"
+from wookielm import paths
+
+BOOKS_DIR = paths.BOOKS_DIR
 PREFIX = "_OceanofPDF.com_"
 
 

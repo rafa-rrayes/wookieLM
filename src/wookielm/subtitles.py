@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-subtitles.py — Gather and structure English Star Wars subtitles into a corpus.
+Gather and structure English Star Wars subtitles into a corpus.
 
 Two modes:
   api    : download subtitles from the OpenSubtitles REST API (needs a free API key)
@@ -17,9 +17,9 @@ so this script uses the official API (rate-limited, requires an account) instead
 
 Usage:
   export OPENSUBTITLES_API_KEY=xxxx
-  python3 subtitles.py api    --out ./subtitles
-  python3 subtitles.py local  --in ./my_subs --out ./subtitles
-  python3 subtitles.py list                       # print the built-in title list
+  uv run --with requests wookiee-subtitles api               # default out: corpus/subtitles
+  uv run --with requests wookiee-subtitles local --in ./my_subs
+  uv run wookiee-subtitles list                              # print the built-in title list
 
 API key resolution order: --api-key flag  >  OPENSUBTITLES_API_KEY env var.
 """
@@ -36,6 +36,8 @@ import unicodedata
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 from typing import Iterable
+
+from wookielm import paths
 
 try:
     import requests
@@ -545,8 +547,8 @@ def main(argv: list[str] | None = None) -> None:
     sub = p.add_subparsers(dest="mode", required=True)
 
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--out", type=Path, default=Path("./subtitles"),
-                        help="output directory (default: ./subtitles)")
+    common.add_argument("--out", type=Path, default=paths.SUBTITLES_DIR,
+                        help="output directory (default: corpus/subtitles)")
     common.add_argument("--strip-speakers", action="store_true",
                         help="remove SPEAKER: labels at line starts")
     common.add_argument("--keep-cues", action="store_true",

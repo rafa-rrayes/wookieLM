@@ -16,9 +16,8 @@ of every breadcrumb.
 
 Usage:
     export GEMINI_API_KEY=...
-    uv run --with google-genai --with pydantic --with tqdm \
-        generate_fact.py --limit 5 --letters A
-    uv run generate_fact.py --article "Anakin Skywalker" --overwrite
+    uv run wookiee-generate-fact --limit 5 --letters A
+    uv run wookiee-generate-fact --article "Anakin Skywalker" --overwrite
 """
 
 from __future__ import annotations
@@ -38,6 +37,8 @@ from google.genai import errors as genai_errors
 from google.genai import types
 from pydantic import BaseModel, Field
 from tqdm import tqdm
+
+from wookielm import paths
 
 try:  # optional: only needed for the --ollama (local model) backend
     import ollama as _ollama
@@ -590,8 +591,10 @@ async def main_async(args: argparse.Namespace) -> int:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    p.add_argument("--input-dir", default="wookieepedia")
-    p.add_argument("--output-dir", default="facts_dataset")
+    p.add_argument("--input-dir", default=str(paths.WOOKIEEPEDIA_DIR),
+                   help="Markdown corpus to read (default: corpus/wookieepedia).")
+    p.add_argument("--output-dir", default=str(paths.FACTS_DIR),
+                   help="Where JSONL facts are written (default: corpus/facts_dataset).")
     p.add_argument("--model", default="gemini-3.1-flash-lite",
                    help="Gemini model to use (ignored when --ollama is set).")
     p.add_argument("--ollama", default="",
@@ -634,5 +637,9 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-if __name__ == "__main__":
+def main() -> None:
     sys.exit(asyncio.run(main_async(parse_args())))
+
+
+if __name__ == "__main__":
+    main()

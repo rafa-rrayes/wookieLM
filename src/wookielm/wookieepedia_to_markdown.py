@@ -11,7 +11,7 @@ Usage:
     2. Extract:  7z x starwars_pages_current.xml.7z
     3. Install deps: uv sync
     4. Install pandoc: brew install pandoc  (or apt install pandoc)
-    5. Run:  uv run wookieepedia_to_markdown.py starwars_pages_current.xml ./output
+    5. Run:  uv run wookiee-wookieepedia starwars_pages_current.xml
 
 Resume: rerun the same command. Already-converted files are skipped unless --force.
 """
@@ -28,6 +28,8 @@ from pathlib import Path
 import mwxml
 import mwparserfromhell
 from tqdm import tqdm
+
+from wookielm import paths
 
 # ---- Filtering ---------------------------------------------------------------
 
@@ -622,7 +624,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("dump_xml", help="Path to extracted Wookieepedia XML dump")
-    parser.add_argument("output_dir", help="Output directory for markdown files")
+    parser.add_argument("output_dir", nargs="?", default=str(paths.WOOKIEEPEDIA_DIR),
+                        help="Output directory for markdown files (default: corpus/wookieepedia)")
     parser.add_argument("--limit", type=int, default=None,
                         help="Stop after N successfully converted pages (testing)")
     parser.add_argument("--log", default="conversion.log", help="Path to error log")

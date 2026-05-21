@@ -14,8 +14,8 @@ Titles match the `title:` frontmatter field of the local .md files exactly,
 including "/Legends" subpage suffixes (e.g. "Vibroblade Brigade/Legends").
 
 Usage:
-    uv run fetch_continuity.py            # fetch both; skip if already cached
-    uv run fetch_continuity.py --force    # re-fetch even if cached
+    uv run wookiee-fetch-continuity            # fetch both; skip if already cached
+    uv run wookiee-fetch-continuity --force    # re-fetch even if cached
 """
 
 from __future__ import annotations
@@ -25,11 +25,11 @@ import sys
 import time
 import urllib.parse
 import urllib.request
-from pathlib import Path
+from wookielm import paths
 
 API = "https://starwars.fandom.com/api.php"
 UA = "wookieLM-research/1.0 (rafa@rayes.com.br)"
-OUT_DIR = Path(__file__).parent / "continuity"
+OUT_DIR = paths.CONTINUITY_DIR
 
 # Output tag -> source era categories. "noncanon" merges the in-universe
 # non-canonical tiers (cut content, easter eggs, April Fools, crossovers) that
