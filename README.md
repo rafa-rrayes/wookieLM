@@ -1,4 +1,4 @@
-# wookieLM
+# wookieeLM
 
 A pipeline for building a **multi-source Star Wars text corpus** and turning it
 into training data for LLMs. The end goal is two artifacts:
