@@ -15,14 +15,15 @@ built so far is the subset below.
 
 Snapshot from `uv run count.py` (token estimate is `bytes / 4`):
 
-| Source | Built by | Files | Size | ~Tokens |
-|---|---|--:|--:|--:|
-| Wookieepedia | `wookieepedia_to_markdown.py` | 171,440 | 344 MB | ~90.2M |
-| Wikipedia (SW) | `wikipedia.py` (crawl + scrape) | 1,003 | 14.7 MB | ~3.9M |
-| Subtitles | `subtitles.py` | 371 | 4.2 MB | ~1.1M |
-| Movie scripts | added manually (see `data_sources.md` #15) | 6 | 969 KB | ~0.25M |
-| **Facts** (SFT) | `generate_fact.py` | 1,303 | 4.4 MB | ~1.2M |
-| **Total** | | 174,123 | 368 MB | ~96.5M |
+| Source | Files | Content Size | ~Tokens |
+|---|---:|---:|---:|
+| subtitles | 371 | 4.2 MB | 1,094,520 |
+| scripts | 6 | 968.8 KB | 248,009 |
+| wookieepedia | 171,441 | 347.2 MB | 91,026,094 |
+| wikipedia | 1,003 | 17.0 MB | 4,451,050 |
+| facts | 4,303 | 11.5 MB | 3,013,333 |
+| books | 50 | 29.7 MB | 7,782,508 |
+| **TOTAL** | **177,174** | **410.5 MB** | **107,615,515** |
 
 ## Pipeline
 
