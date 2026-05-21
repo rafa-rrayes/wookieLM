@@ -22,8 +22,11 @@ def human(b):
 
 data = [
     ("subtitles",    measure("subtitles", (".txt",))),
+    ("scripts",      measure("scripts", (".md",))),
     ("wookieepedia", measure("wookieepedia", (".md",))),
+    ("wikipedia",    measure("wikipedia", (".md",))),
     ("facts",        measure("facts_dataset", (".jsonl",))),
+    ('books',         measure("books", (".txt",))),
 ]
 
 
@@ -90,4 +93,4 @@ def count_files():
 
 if __name__ == "__main__":
     count_files()
-    count_facts("facts_dataset/**/*.jsonl")
+    # count_facts("facts_dataset/**/*.jsonl")
